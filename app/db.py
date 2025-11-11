@@ -51,3 +51,8 @@ def get_participant_full(user_id: int):
         """, (user_id,))
         return cursor.fetchone()
 
+def clear_participants():
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("DELETE FROM participants")
+
+

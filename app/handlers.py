@@ -12,7 +12,7 @@ from app.config_loader import config
 from app.states import Broadcast
 from app.db import (
     save_user, get_all_users, get_all_participants,
-    save_participant,get_participant_full
+    save_participant,get_participant_full,clear_participants
 )
 import app.keyboards as kb
 from app.keyboards import participate_keyboard
@@ -138,8 +138,11 @@ async def process_broadcast_text(message: Message, state: FSMContext):
 @router.callback_query(F.data == "participate")
 async def handle_participation(callback: CallbackQuery):
     save_participant(callback.from_user.id)
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await callback.answer("✅ Вы зарегистрированы на розыгрыш!")
+    await callback.message.edit_text(
+        "🎉 Спасибо за участие!\n🎫 Вы зарегистрированы в розыгрыше! Ждите удачи ✨"
+    )
+    await callback.answer()
+
 
 @router.message(Command("invite"))
 async def invite_to_draw(message: Message):
@@ -184,3 +187,11 @@ async def draw_winner(message: Message):
         )
     except Exception as e:
         await message.answer(f"⚠️ Ошибка при отправке победителю ({winner_id}): {e}")
+
+@router.message(Command("reset_draw"))
+async def reset_draw(message: Message):
+    if message.from_user.id != ADMIN_ID:
+        return await message.answer("❌ Нет доступа")
+
+    clear_participants()
+    await message.answer("🔄 Участники розыгрыша сброшены.")
