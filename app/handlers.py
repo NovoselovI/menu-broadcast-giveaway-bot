@@ -7,9 +7,9 @@ from aiogram.filters import CommandStart, Command
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.exceptions import TelegramForbiddenError, TelegramRetryAfter, TelegramBadRequest
+from aiogram.fsm.state import State, StatesGroup
 
 from app.config_loader import config
-from app.states import Broadcast
 from app.db import (
     save_user, get_all_users, get_all_participants,
     save_participant,get_participant_full,clear_participants
@@ -22,6 +22,9 @@ ADMIN_ID = 412718651
 
 
 router = Router()
+class Broadcast(StatesGroup):
+    waiting_for_text = State()
+
 
 
 @router.message(CommandStart())
@@ -126,7 +129,7 @@ async def process_broadcast_text(message: Message, state: FSMContext):
         try:
             await message.bot.send_message(user_id, text)
             sent += 1
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.5)
         except TelegramForbiddenError:
             failed += 1
         except TelegramRetryAfter as e:
@@ -165,7 +168,7 @@ async def invite_to_draw(message: Message):
                 reply_markup=participate_keyboard
             )
             sent += 1
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.3)
         except Exception:
             continue
 
