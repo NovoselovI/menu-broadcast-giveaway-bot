@@ -11,6 +11,7 @@ main = InlineKeyboardMarkup(
             InlineKeyboardButton(text="🎉 Активности", callback_data="activities")
         ],
         [
+            InlineKeyboardButton(text="👗 Дресс-код", callback_data="dress"),
             InlineKeyboardButton(text="📞 Контакты", callback_data="contacts")
         ]
     ]

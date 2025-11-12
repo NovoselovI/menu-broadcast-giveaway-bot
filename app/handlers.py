@@ -82,6 +82,12 @@ async def sales(callback: CallbackQuery):
     await callback.answer('')
     await callback.message.answer(config["sales"],reply_markup=kb.back_activities)
 
+@router.callback_query(F.data == 'dress')
+async def dress (callback: CallbackQuery):
+    await callback.message.delete()
+    await callback.answer('')
+    await callback.message.answer(config["dress"],reply_markup=kb.main)
+
 @router.callback_query(F.data == 'back_activities')
 async def back_activities(callback: CallbackQuery):
     await callback.message.delete()
