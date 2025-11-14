@@ -35,7 +35,17 @@ async def cmd_start(message: Message):
         first_name=message.from_user.first_name
     )
 
-    await message.answer_video(video="BAACAgIAAxkBAAODaRMHL1rq1K5IYXbi6gFcK4VrjCUAAt58AAKyEJhIVo1btZka3Hk2BA",caption=config["start_text"],reply_markup=kb.main)
+    try:
+        await message.answer_video(
+            video="BAACAgIAAxkBAAODaRMHL1rq1K5IYXbi6gFcK4VrjCUAAt58AAKyEJhIVo1btZka3Hk2BA",
+            caption=config["start_text"],
+            reply_markup=kb.main
+        )
+    except TelegramForbiddenError:
+        pass
+    except Exception as e:
+        logging.error(f"Ошибка при отправке видео пользователю {message.from_user.id}: {e}")
+
 
 @router.callback_query(F.data == 'legend')
 async def legend(callback: CallbackQuery):
@@ -129,7 +139,7 @@ async def process_broadcast_text(message: Message, state: FSMContext):
         try:
             await message.bot.send_message(user_id, text)
             sent += 1
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(1)
         except TelegramForbiddenError:
             failed += 1
         except TelegramRetryAfter as e:
@@ -153,6 +163,7 @@ async def handle_participation(callback: CallbackQuery):
     await callback.answer()
 
 
+
 @router.message(Command("invite"))
 async def invite_to_draw(message: Message):
     if message.from_user.id != ADMIN_ID:
@@ -160,6 +171,8 @@ async def invite_to_draw(message: Message):
 
     users = get_all_users()
     sent = 0
+    failed = 0
+
     for user_id in users:
         try:
             await message.bot.send_message(
@@ -168,12 +181,19 @@ async def invite_to_draw(message: Message):
                 reply_markup=participate_keyboard
             )
             sent += 1
-            await asyncio.sleep(0.3)
-        except Exception:
+            await asyncio.sleep(0.5)
+        except TelegramForbiddenError:
+            failed += 1
+        except TelegramRetryAfter as e:
+            await asyncio.sleep(e.retry_after)
             continue
+        except TelegramBadRequest:
+            failed += 1
+        except Exception as e:
+            logging.error(f"Ошибка при отправке пользователю {user_id}: {e}")
+            failed += 1
 
-    await message.answer(f"✅ Отправлено {sent} пользователям.")
-
+    await message.answer(f"✅ Отправлено {sent} пользователям. ❌ Не доставлено: {failed}")
 
 
 @router.message(Command("draw"))

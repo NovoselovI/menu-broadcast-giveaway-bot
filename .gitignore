@@ -1,0 +1,43 @@
+# Virtual environment
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# SQLite DB files
+*.db
+
+# Environment variables
+.env
+.env.*
+
+# VSCode / PyCharm
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# YAML backups
+*.yaml~
+*.yml~
+
+# compiled
+build/
+dist/
+*.egg-info/
+
+# uploads/temp
+temp/
+cache/
+
+# JetBrains
+out/
