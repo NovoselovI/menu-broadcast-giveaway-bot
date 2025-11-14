@@ -34,7 +34,7 @@ The bot provides event information, menus, contacts, activities, and includes to
 project/
 │── app/
 │   ├── handlers.py        # Commands and callback handlers
-│   ├── db.py              # SQLite user & participants storage
+│   ├── db.py              # SQLite functions 
 │   ├── keyboards.py       # Inline keyboard layouts
 │   ├── config_loader.py   # Loads YAML content
 │   ├── content.yaml       # Texts for menus and sections
